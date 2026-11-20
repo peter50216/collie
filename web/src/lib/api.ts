@@ -391,10 +391,31 @@ export async function fetchAuthedBytes(path: string, signal?: AbortSignal): Prom
   return (await fetchAuthedAnswer(path, signal)).blob;
 }
 
+/**
+ * How long a sent file may take to arrive (ADR 0157). A video may be 100 MB, and over a phone's link
+ * that is minutes, not the ten seconds an ordinary read gets.
+ */
+const SENT_FILE_TIMEOUT_MS = 10 * 60_000;
+
+/**
+ * The path of one file the pane's agent sent (ADR 0157), scoped to the pane's machine like a blob.
+ * The file id is the `file_uuid` the bridge sent; it is checked here too, so a value of another
+ * shape never becomes a request.
+ */
+export function sentFilePath(paneId: string, fileId: string, scope?: Scope): string | null {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(fileId)) return null;
+  return withScope(`/api/pane/${encodeURIComponent(paneId)}/sent-file/${fileId}`, scope);
+}
+
+/** The bytes of one sent file, with the pairing token and the long timeout a video needs. */
+export async function fetchSentFile(path: string, signal?: AbortSignal): Promise<Blob> {
+  return (await fetchAuthedAnswer(path, signal, SENT_FILE_TIMEOUT_MS)).blob;
+}
+
 /** {@link fetchAuthedBytes} with the answer's headers, for a caller that reads a version off them. */
-async function fetchAuthedAnswer(path: string, signal?: AbortSignal): Promise<{ blob: Blob; headers: Headers }> {
+async function fetchAuthedAnswer(path: string, signal?: AbortSignal, timeoutMs = GET_TIMEOUT_MS): Promise<{ blob: Blob; headers: Headers }> {
   const res = await apiFetch(path, {
-    signal: withTimeout(signal, GET_TIMEOUT_MS),
+    signal: withTimeout(signal, timeoutMs),
     headers: { [XHR_HEADER]: XHR_HEADER_VALUE, ...authHeader() },
   });
   captureBuild(res);

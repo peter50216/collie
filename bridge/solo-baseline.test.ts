@@ -859,6 +859,9 @@ describe("solo zero-tax — routes", () => {
       // One picture under the Files root, as its bytes (ADR 0090): the Files read's checks and gate,
       // the type read off the bytes, forwarded to the owning member like `files`.
       "/^\\/api\\/pane\\/([^/]+)\\/files\\/image$/",
+      // A file the pane's agent sent with Claude Code's SendUserFile (ADR 0157): a read, gated like the
+      // blob route, the file id looked up in the pane's own log. Forwarded to the member whose log named it.
+      "/^\\/api\\/pane\\/([^/]+)\\/sent-file\\/([^/]+)$/",
       // One Claude subagent's own JSONL transcript, read on demand when the subagent sheet opens.
       "/^\\/api\\/pane\\/([^/]+)\\/subagent\\/([^/]+)$/",
       // Walky talky's list for one pane (M62): the messages that reached it, newest first. A read, gated

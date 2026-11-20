@@ -36,6 +36,7 @@ import { createContext, memo, useContext, useEffect, useMemo, useState, type Rea
 
 import { DiffView, TokenLine, useSyntaxTokens } from "@/components/changes-view";
 import { JournalImage } from "@/components/journal-image";
+import { SentFilesView } from "@/components/sent-files";
 import { isPlainClick, useFileLinks } from "@/components/file-links";
 import { MarkdownText } from "@/components/markdown-text";
 import { MIRROR_INVERT, MIRROR_SPACE } from "@/components/mirror-space";
@@ -71,7 +72,7 @@ import {
   type WalkyCommand,
   type WalkyRow,
 } from "@/lib/walky";
-import type { Hunk, ToolQuestion } from "@/lib/types";
+import type { Hunk, SentFiles, ToolQuestion } from "@/lib/types";
 import type { DiffRow } from "@/lib/unified-diff";
 import { cn } from "@/lib/utils";
 import { USER_WELL, USER_WELL_HUG, USER_WELL_META, USER_WELL_TEXT, USER_WELL_TIME } from "@/components/user-well";
@@ -450,6 +451,8 @@ export const ItemView = memo(function ItemView({ item }: { item: ChatItem }) {
       return <Compacted item={item} />;
     case "image":
       return <ChatImage url={item.url} alt={t("transcript.attachmentAlt")} />;
+    case "sent":
+      return <ChatSent sent={item.sent} />;
     case "tool":
       if (item.image === undefined) return <ToolCard tool={item.tool} status={item.status} waiting={waiting} callId={item.id} />;
       return (
@@ -460,6 +463,12 @@ export const ItemView = memo(function ItemView({ item }: { item: ChatItem }) {
       );
   }
 });
+
+/** Files the agent sent (ADR 0157), fetched from the machine the pane is on. */
+function ChatSent({ sent }: { sent: SentFiles }) {
+  const scope = useScope();
+  return <SentFilesView sent={sent} scope={scope} />;
+}
 
 function ChatImage({ url, alt }: { url: string; alt: string }) {
   const scope = useScope();

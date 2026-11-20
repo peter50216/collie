@@ -1837,6 +1837,13 @@ export const zhTW: Dictionary = {
   "transcript.truncated": "… 已截斷",
   "transcript.toolImageAlt": "工具輸出",
   "transcript.attachmentAlt": "附件",
+  "transcript.sentFileAlt": "代理傳來的檔案",
+  "transcript.sentFilePlay": "載入並播放",
+  "transcript.sentFileDownload": "下載",
+  "transcript.sentFileLoading": "載入中……",
+  "transcript.sentFileGone": "這個檔案已經不在機器上了",
+  "transcript.sentFileTooLarge": "檔案太大，無法載入",
+  "transcript.sentFileFailed": "檔案沒有載入成功，點一下重試",
 
   // --- markdown (agent prose in Chat and History) ---
   "markdown.stretch.close": "顯示較少",

@@ -81,8 +81,36 @@ export type TranscriptPart =
          * no, and a view that draws the two alike tells the reader a lie about their own session.
          */
         denied?: boolean;
+        /**
+         * The files the call put in front of the person: Claude Code's `SendUserFile`
+         * (journal/sent-files.ts). Each file carries an id and no path. The phone asks for the bytes
+         * at `/api/pane/<id>/sent-file/<file id>`, and the bridge finds the path in the pane's own log.
+         */
+        sent?: SentFiles;
       };
     };
+
+/** The kinds of a sent file the phone draws differently: a picture, a player, or a download. */
+export type SentFileKind = "image" | "video" | "audio" | "file";
+
+/** One file of a `SendUserFile` call, as the phone sees it. The path stays on the bridge. */
+export interface SentFile {
+  /** Claude Code's `file_uuid` for the file. The route looks it up in the log, never as a path. */
+  id: string;
+  /** The file's base name, for the card and the download. */
+  name: string;
+  kind: SentFileKind;
+  /** The media type Claude Code recorded. A label only: the route reads the type off the bytes. */
+  mediaType?: string;
+  /** The size in bytes Claude Code recorded when it sent the file. */
+  size?: number;
+}
+
+/** What one `SendUserFile` call sent: its caption, when it had one, and its files. */
+export interface SentFiles {
+  caption?: string;
+  files: SentFile[];
+}
 
 /**
  * One turn of the conversation.

@@ -1850,6 +1850,13 @@ export const ko: Dictionary = {
   "transcript.truncated": "… 생략됨",
   "transcript.toolImageAlt": "도구 출력",
   "transcript.attachmentAlt": "첨부 파일",
+  "transcript.sentFileAlt": "에이전트가 보낸 파일",
+  "transcript.sentFilePlay": "불러와서 재생",
+  "transcript.sentFileDownload": "다운로드",
+  "transcript.sentFileLoading": "불러오는 중…",
+  "transcript.sentFileGone": "이 파일은 더 이상 머신에 없습니다",
+  "transcript.sentFileTooLarge": "파일이 너무 커서 불러올 수 없습니다",
+  "transcript.sentFileFailed": "파일을 불러오지 못했습니다. 탭하여 다시 시도",
 
   // --- markdown (agent prose in Chat and History) ---
   "markdown.stretch.close": "간략히 보기",

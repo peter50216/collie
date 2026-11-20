@@ -222,6 +222,7 @@ import { redactAnsi } from "./redact.ts";
 import { TranscriptStore } from "./journal/store.ts";
 import type { AgentSessionRef, DiscoverHints, ForegroundProcess, JournalAdapter, PaneScreen } from "./journal/types.ts";
 import { isBlobHash, resolveBlobPath } from "./journal/pi.ts";
+import { isSentFileId, readSentFile, SENT_FILE_MAX_BYTES, sentFileInLog } from "./journal/sent-files.ts";
 import { realpathOf, statFile } from "./journal/files.ts";
 import {
   bearerToken,
@@ -424,9 +425,11 @@ const CONTENT_TYPES = new Map<string, string>([
 // React as text nodes, never markup, so terminal output can't inject. 'unsafe-inline' is allowed
 // for styles only (the toast library injects a <style> tag) — it can't execute code. `blob:` in
 // img-src is the composer's attachment thumbnail (ADR 0060): a blob URL is minted only by this
-// page's own script, from a file the operator picked, so it admits no new origin.
+// page's own script, from a file the operator picked, so it admits no new origin. `blob:` in
+// media-src is a video or a sound the agent sent (ADR 0157): the page fetches it with the pairing
+// token and plays the object URL it minted, which again admits no new origin.
 const CSP =
-  "default-src 'self'; connect-src 'self'; img-src 'self' data: blob:; " +
+  "default-src 'self'; connect-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; " +
   "style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self'; " +
   "manifest-src 'self'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'; form-action 'self'";
 
@@ -723,6 +726,15 @@ const WORKSPACE_FILES_EXIST_ROUTE = /^\/api\/workspace\/([^/]+)\/files\/exist$/;
  */
 const PANE_FILES_IMAGE_ROUTE = /^\/api\/pane\/([^/]+)\/files\/image$/;
 const WORKSPACE_FILES_IMAGE_ROUTE = /^\/api\/workspace\/([^/]+)\/files\/image$/;
+
+/**
+ * `GET /api/pane/<id>/sent-file/<file id>`: one file the pane's agent sent to the person with Claude
+ * Code's `SendUserFile` (ADR 0157). The file id is a `file_uuid`, looked up in the pane's own log and
+ * never made into a path; the path comes from the record Claude Code wrote. A read, gated like the
+ * blob route, and forwarded with `?host=` like it, because the file is on the machine whose log named
+ * it: `bridge/crew/forward.ts` mirrors this shape and `forward.test.ts` pins it.
+ */
+const PANE_SENT_FILE_ROUTE = /^\/api\/pane\/([^/]+)\/sent-file\/([^/]+)$/;
 
 /**
  * `GET /api/pane/<id>/claude-commands`: the commands the pane's agent would load in its cwd, read off
@@ -2474,6 +2486,26 @@ export function startServer(opts: {
         return text("malformed URL", 400);
       }
       return paneSubagent(cfg, journals, rt.engine, rt.herdr, paneId, agentId, req);
+    }
+
+    // ── A file the agent sent to the person (ADR 0157): its bytes, found by id in the pane's log ──
+    const sentFileMatch = pathname.match(PANE_SENT_FILE_ROUTE);
+    if (sentFileMatch) {
+      const denied = caller.gate("read");
+      if (denied) return denied;
+      if (req.method !== "GET") return text("method not allowed", 405);
+      const rt = await caller.resolve();
+      // A member's file, forwarded: the lead states the cache rule itself, as for a blob.
+      if (rt instanceof Response) return forwardedSentFile(rt);
+      let paneId: string;
+      let fileId: string;
+      try {
+        paneId = decodeURIComponent(sentFileMatch[1]!);
+        fileId = decodeURIComponent(sentFileMatch[2]!);
+      } catch {
+        return text("malformed URL", 400);
+      }
+      return paneSentFile(cfg, journals, rt.engine, rt.herdr, paneId, fileId);
     }
 
     // ── Files, one picture as bytes (ADR 0090): the image the text read called binary ──
@@ -6208,6 +6240,70 @@ export function forwardedFilesImage(res: Response): Response {
   for (const [name, value] of Object.entries(FILES_IMAGE_HEADERS)) res.headers.set(name, value);
   res.headers.delete("etag");
   return secure(res);
+}
+
+/**
+ * The headers of every sent file (ADR 0157): nothing keeps it, for the blob route's reason (the
+ * browser's cache outlives the pairing), and the bytes run nothing if a browser opens them as a page.
+ */
+const SENT_FILE_HEADERS = {
+  "cache-control": "private, no-store",
+  "content-security-policy": "default-src 'none'; sandbox",
+} as const;
+
+/** A member's answer to a sent-file read, forwarded, with the lead's own cache rule on it. */
+export function forwardedSentFile(res: Response): Response {
+  for (const [name, value] of Object.entries(SENT_FILE_HEADERS)) res.headers.set(name, value);
+  res.headers.delete("etag");
+  return secure(res);
+}
+
+/** `filename*` for a `content-disposition` header: the name percent-encoded, so no byte of it is a header. */
+function dispositionName(name: string): string {
+  return `filename*=UTF-8''${encodeURIComponent(name)}`;
+}
+
+/**
+ * GET /api/pane/:id/sent-file/:fileId (ADR 0157). The pane's log is found exactly as the history read
+ * finds it (the pane id is a lookup in the snapshot), the file id is looked up in that log
+ * (`sentFileInLog`), and the record's path is read where it is (`readSentFile`). The type comes off
+ * the bytes: a picture, a video or a sound is served `inline` under its own type, and anything else
+ * as `application/octet-stream` and `attachment`. A file that is gone is `404`, so the phone can say so.
+ */
+export async function paneSentFile(
+  cfg: Config,
+  journals: Record<string, JournalAdapter> | null,
+  engine: StateEngine,
+  mux: Pick<MuxAdapter, "readGrid" | "foregroundProcesses" | "paneLabels">,
+  paneId: string,
+  fileId: string,
+): Promise<Response> {
+  if (!isSentFileId(fileId)) return text("invalid file id", 400);
+  const notFound = () => text("file not found", 404);
+  if (!cfg.transcript || journals === null) return notFound();
+  const { agents, shellPanes } = engine.current();
+  const panes = [...agents, ...shellPanes];
+  const pane = panes.find((a) => a.paneId === paneId);
+  if (pane === undefined) return notFound();
+  const adapter = adapterFor(journals, journalAgentOf(pane));
+  if (adapter === undefined) return notFound();
+  const ref = await journalRefOf(adapter, pane, panes, await discoveryHints(adapter, pane, mux, paneId));
+  if (ref === null) return notFound();
+  const logPath = await adapter.source.resolve(ref);
+  if (logPath === null) return notFound();
+  const record = await sentFileInLog(logPath, fileId);
+  if (record === null) return notFound();
+  const read = await readSentFile(record);
+  if (read.kind === "gone") return notFound();
+  if (read.kind === "too-large") {
+    return text(`file too large (max ${String(Math.round(SENT_FILE_MAX_BYTES / (1024 * 1024)))} MB)`, 413);
+  }
+  const headers = new Headers({
+    ...SENT_FILE_HEADERS,
+    "content-type": read.type ?? "application/octet-stream",
+    "content-disposition": `${read.type === null ? "attachment" : "inline"}; ${dispositionName(read.name)}`,
+  });
+  return secure(new Response(Bun.file(read.real), { headers }));
 }
 
 /**
