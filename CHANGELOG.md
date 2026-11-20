@@ -23,6 +23,10 @@ Running a crew? Update the lead first; members follow on their own. Details:
 
 ## [Unreleased]
 
+### Added
+
+- **A file Claude Code sends with SendUserFile now shows on the phone.** Chat and History draw the call's caption and each file in place of a bare tool card: a picture at once, a video or a sound in a player after a tap, and any other file as a download. The bytes come from the file where the agent left it, found by its id in the pane's own log, up to 100 MB; a file that is gone says so (ADR 0175).
+
 ## [1.30.0] - 2026-11-21
 
 ### Added

@@ -3966,12 +3966,13 @@ describe("the host gate — `?host=` selects among enrolled members and nothing 
     // writes, served by one function with one resolve for the read and one for the writes (ADR 0107),
     // and the New page's folder browser (#467), and a session's walky talky off switch (M89 spec 04), and the two routes of this machine's "Worktree folder" setting (ADR 0093, note of 2026-11-13), and
     // this machine's accounts, one resolve for the read and one for the two writes (M101), and an
-    // answer to an ask by id, the hook hold card's tap on a member's pane (M56 spec 12)) reach their runtime through the caller's resolver and
+    // answer to an ask by id, the hook hold card's tap on a member's pane (M56 spec 12), and a file the
+    // pane's agent sent with SendUserFile (ADR 0175)) reach their runtime through the caller's resolver and
     // nothing else. One of them, the launcher rows, hands the resolver the lead's merge (ADR 0127), and
     // two, the launch and the branch create, hand it the lead's row carry (ADR 0127 point 3). The project
     // picture (ADR 0160) is one more read, resolved like a blob.
     const carry = String.raw`undefined, leadRowCarry\(allowedLaunchers, homedir\(\)\)`;
-    expect([...src.matchAll(new RegExp(String.raw`await caller\.resolve\((?:leadRows|${carry})?\);`, "g"))]).toHaveLength(34);
+    expect([...src.matchAll(new RegExp(String.raw`await caller\.resolve\((?:leadRows|${carry})?\);`, "g"))]).toHaveLength(35);
     expect([...src.matchAll(/await caller\.resolve\(leadRows\);/g)]).toHaveLength(1);
     expect([...src.matchAll(new RegExp(String.raw`await caller\.resolve\(${carry}\);`, "g"))]).toHaveLength(2);
     // Exactly eight `registry.get(` calls remain, and each is a sanctioned one, named here rather
@@ -6450,9 +6451,9 @@ describe("journalRefOf — which session the history and chat routes read", () =
   // reported ref and every case above still passes while the resumed session goes unread again.
   test("every journal route reads the ref journalRefOf settles on, never the reported one", () => {
     const src = readFileSync(join(import.meta.dir, "server.ts"), "utf8");
-    // history, chat, the subagent transcript read and the pins (M90), each handing discovery the hints
-    // built for the pane (screen and argv)
-    expect([...src.matchAll(/journalRefOf\(adapter, pane, panes, await discoveryHints\(/g)]).toHaveLength(4);
+    // history, chat, the subagent transcript read, the pins (M90) and a sent file (ADR 0175), each
+    // handing discovery the hints built for the pane (screen and argv)
+    expect([...src.matchAll(/journalRefOf\(adapter, pane, panes, await discoveryHints\(/g)]).toHaveLength(5);
     expect(src).not.toMatch(/pane\.agentSession \?\?/);
   });
 });

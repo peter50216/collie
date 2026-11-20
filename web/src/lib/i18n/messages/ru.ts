@@ -1802,6 +1802,13 @@ export const ru: Dictionary = {
   "transcript.truncated": "… часть скрыта",
   "transcript.toolImageAlt": "Вывод инструмента",
   "transcript.attachmentAlt": "Вложение",
+  "transcript.sentFileAlt": "Файл от агента",
+  "transcript.sentFilePlay": "Загрузить и воспроизвести",
+  "transcript.sentFileDownload": "Скачать",
+  "transcript.sentFileLoading": "Загрузка…",
+  "transcript.sentFileGone": "Этого файла больше нет на машине",
+  "transcript.sentFileTooLarge": "Файл слишком большой для загрузки",
+  "transcript.sentFileFailed": "Не удалось загрузить файл. Нажмите, чтобы повторить",
 
   // --- markdown (agent prose in Chat and History) ---
   "markdown.stretch.close": "Показать меньше",

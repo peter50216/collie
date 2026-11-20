@@ -1827,6 +1827,13 @@ export const ja: Dictionary = {
   "transcript.truncated": "… 省略",
   "transcript.toolImageAlt": "ツールの出力",
   "transcript.attachmentAlt": "添付ファイル",
+  "transcript.sentFileAlt": "エージェントが送ったファイル",
+  "transcript.sentFilePlay": "読み込んで再生",
+  "transcript.sentFileDownload": "ダウンロード",
+  "transcript.sentFileLoading": "読み込み中…",
+  "transcript.sentFileGone": "このファイルはもうマシンにありません",
+  "transcript.sentFileTooLarge": "ファイルが大きすぎて読み込めません",
+  "transcript.sentFileFailed": "読み込めませんでした。タップして再試行",
 
   // --- markdown (agent prose in Chat and History) ---
   "markdown.stretch.close": "折りたたむ",

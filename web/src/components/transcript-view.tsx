@@ -4,6 +4,7 @@ import { Icon } from "@/components/icons/icon";
 import { AgentIcon } from "@/components/agent-icon";
 import { DividedLine } from "@/components/ui/divided-line";
 import { JournalImage } from "@/components/journal-image";
+import { SentFilesView } from "@/components/sent-files";
 import { MarkdownText } from "@/components/markdown-text";
 import { cn } from "@/lib/utils";
 import { FOCUS_RING_INSET } from "@/components/ui/button";
@@ -151,6 +152,15 @@ function Part({
   /** The part belongs to an assistant turn, so its reply prose may carry stretches. */
   fromAgent: boolean;
 }) {
+  // Files the agent sent (ADR 0175) show as the files, under the call's card, never behind a tap.
+  if (part.kind === "tool" && part.result?.sent !== undefined) {
+    return (
+      <div className="flex flex-col gap-1.5">
+        <ToolPart part={part} query={query} scope={scope} />
+        <SentFilesView sent={part.result.sent} scope={scope} />
+      </div>
+    );
+  }
   // Tool output is COMMAND output, not prose — it stays verbatim in a monospace block (see ToolPart).
   if (part.kind === "tool") return <ToolPart part={part} query={query} scope={scope} />;
   if (part.kind === "image") {

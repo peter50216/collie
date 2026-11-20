@@ -1625,8 +1625,31 @@ export type TranscriptPart =
          * no, and a view that draws the two alike tells the reader a lie about their own session.
          */
         denied?: boolean;
+        /**
+         * The files the call put in front of the person: Claude Code's `SendUserFile` (ADR 0175).
+         * Ids and names only; the bytes are at `/api/pane/<id>/sent-file/<file id>`.
+         */
+        sent?: SentFiles;
       };
     };
+
+/** The kinds of a sent file the phone draws differently: a picture, a player, or a download. */
+export type SentFileKind = "image" | "video" | "audio" | "file";
+
+/** One file of a `SendUserFile` call (bridge/journal/types.ts `SentFile`). */
+export interface SentFile {
+  id: string;
+  name: string;
+  kind: SentFileKind;
+  mediaType?: string;
+  size?: number;
+}
+
+/** What one `SendUserFile` call sent: its caption, when it had one, and its files. */
+export interface SentFiles {
+  caption?: string;
+  files: SentFile[];
+}
 
 /**
  * One turn. `user`/`assistant` are speech; the other two are not, and render set apart so they can't

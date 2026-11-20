@@ -263,9 +263,11 @@ export const ICONOIR = {
   "send": "send", // send · lucide Send
   "send-now": "long-arrow-down-left", // send the queued line now · lucide CornerDownLeft
   "send-ready": "arrow-up", // the send button once the box holds text · lucide ArrowUp
+  "sent-audio": "music-double-note", // a sound the agent sent · lucide Music
   "sent-history": "list", // sent lines record · lucide ListEnd
   "sent-ok": "check", // the send or key press went through (brief state) · lucide Check
   "sent-suggestions": "input-field", // sent line suggestions · lucide TextCursorInput
+  "sent-video": "media-video", // a video the agent sent · lucide Film
   "session": "multi-window", // the multiplexer session · lucide Layers
   "settings": "settings", // settings · lucide Settings
   "share-menu": "share-ios", // the iOS Share button · lucide Share

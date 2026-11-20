@@ -37,7 +37,9 @@ export function hostKeepsPins(version: string | undefined): boolean {
  */
 export function isPinnable(item: ChatItem): boolean {
   switch (item.kind) {
+    // A sent file is a picture or a file like `image` (ADR 0175): its bytes are on a disk, not in a pin.
     case "image":
+    case "sent":
     case "compacted":
       return false;
     case "user":
@@ -66,7 +68,7 @@ export function writingItemId(blocks: readonly (readonly ChatItem[])[], working:
 
 /** The kind a pin of this block is filed under. Only called for a pinnable block. */
 export function pinKindOf(item: ChatItem): PinKind {
-  if (item.kind === "image" || item.kind === "compacted") return "notice";
+  if (item.kind === "image" || item.kind === "sent" || item.kind === "compacted") return "notice";
   return item.kind;
 }
 
@@ -143,6 +145,9 @@ export function itemCopyText(item: ChatItem): string {
       return item.text ?? "";
     case "image":
       return "";
+    // The caption and the names: the words the block shows, not its bytes.
+    case "sent":
+      return [item.sent.caption ?? "", ...item.sent.files.map((f) => f.name)].filter((line) => line !== "").join("\n");
     case "tool": {
       const printed = "output" in item.tool && item.tool.output !== undefined ? item.tool.output : "";
       return [`${toolNameOf(item.tool)}: ${toolGist(item.tool)}`, printed].filter((part) => part !== "").join("\n");

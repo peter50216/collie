@@ -1988,6 +1988,13 @@ export const en = {
   "transcript.truncated": "… truncated",
   "transcript.toolImageAlt": "Tool output",
   "transcript.attachmentAlt": "Attachment",
+  "transcript.sentFileAlt": "A file the agent sent",
+  "transcript.sentFilePlay": "Load and play",
+  "transcript.sentFileDownload": "Download",
+  "transcript.sentFileLoading": "Loading…",
+  "transcript.sentFileGone": "This file is no longer on the machine",
+  "transcript.sentFileTooLarge": "This file is too large to load",
+  "transcript.sentFileFailed": "The file did not load. Tap to try again",
 
   // --- markdown (agent prose in Chat and History) ---
   "markdown.stretch.close": "Show less",

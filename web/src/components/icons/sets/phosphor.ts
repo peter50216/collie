@@ -263,9 +263,11 @@ export const PHOSPHOR = {
   "send": "paper-plane-right", // send · lucide Send
   "send-now": "key-return", // send the queued line now · lucide CornerDownLeft
   "send-ready": "arrow-up", // the send button once the box holds text · lucide ArrowUp
+  "sent-audio": "music-notes", // a sound the agent sent · lucide Music
   "sent-history": "list-bullets", // sent lines record · lucide ListEnd
   "sent-ok": "check", // the send or key press went through (brief state) · lucide Check
   "sent-suggestions": "textbox", // sent line suggestions · lucide TextCursorInput
+  "sent-video": "film-strip", // a video the agent sent · lucide Film
   "session": "stack", // the multiplexer session · lucide Layers
   "settings": "gear", // settings · lucide Settings
   "share-menu": "share", // the iOS Share button · lucide Share

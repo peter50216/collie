@@ -804,7 +804,10 @@ registered in `registry.ts`). Two other things touch the filesystem, and neither
 the rule below: `stt.json` in the state dir when the operator ran `collie stt setup`
 ([ADR 0029](./.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md)), and the operator's own
 font files under `<config-dir>/fonts`, served read-only through `bridge/operator-fonts.ts`
-([ADR 0148](./.adr/0148-a-theme-names-words-never-drawings-and-the-device-choice-wins.md)).
+([ADR 0148](./.adr/0148-a-theme-names-words-never-drawings-and-the-device-choice-wins.md)). A file the agent sent with Claude Code's
+`SendUserFile` is read where it is, by `bridge/journal/sent-files.ts`: the phone names a `file_uuid`,
+and the path comes from the attachment record in the pane's own log, never from the request
+([ADR 0175](./.adr/0175-a-file-the-agent-sent-is-read-where-it-is.md)).
 
 **The law is that a CLIENT-SUPPLIED value becomes a path in four places only: the journal, the
 Changes view, the Files view, and a branch's folder** — in the journal it is a pane id, never a path.
