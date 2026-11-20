@@ -6,7 +6,7 @@ Every glyph the app draws is named by what it means. A theme's `glyphs` picks th
 them (ADR 0137). A family with no fitting glyph for a key draws the lucide one, shown as `(lucide)`.
 Phosphor's three sets share one map; the fill and duotone files add `-fill` and `-duotone`.
 
-337 keys.
+339 keys.
 
 Phosphor Fill draws these keys in the regular weight, so a cross stays a cross and an empty or
 not-started state stays empty: `action-check`, `action-x`, `answered`, `clear`, `close`, `confirm`, `copied`, `copy-failed`, `decision-dismissed`, `dismiss`, `done`, `mod-icon-check`, `mod-icon-x`, `mod-step-done`, `mod-step-failed`, `mod-step-todo`, `ok`, `plan-done`, `plan-pending`, `remove`, `selected`, `sent-ok`, `update-step-done`, `update-step-failed`, `update-step-skipped`, `voice-setup`, `zoom-out`.
@@ -129,6 +129,8 @@ These keys are solid in every set: `Icon` fills the lucide and iconoir glyph, an
 | `scroll-to-latest` | scroll to the newest message | `ArrowDown` | `arrow-down` | `arrow-down` |
 | `select-text` | select text | `SquareDashedText` | `cursor-text` | `frame-select` |
 | `send-now` | send the queued line now | `CornerDownLeft` | `key-return` | `long-arrow-down-left` |
+| `sent-audio` | a sound the agent sent | `Music` | `music-notes` | `music-double-note` |
+| `sent-video` | a video the agent sent | `Film` | `film-strip` | `media-video` |
 | `show-terminal-view` | show the terminal behind a card | `SquareTerminal` | `terminal-window` | `terminal` |
 | `step-next` | next step | `ChevronRight` | `caret-right` | `nav-arrow-right` |
 | `step-prev` | previous step | `ChevronLeft` | `caret-left` | `nav-arrow-left` |

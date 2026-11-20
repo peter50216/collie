@@ -330,6 +330,11 @@ describe("which routes cross a link", () => {
     expect(blob).toBe("/^\\/api\\/blobs\\/([^/]+)$/");
     expect(crewRouteFor("/api/blobs/x")).toBe("blobs/x");
     expect(crewRouteFor("/api/blobs/x/y")).toBeNull();
+    // A sent file (ADR 0160) is the same pairing: the pane id and the file id, each one opaque segment.
+    const sentFile = server.match(/^const PANE_SENT_FILE_ROUTE = (.+);$/m)![1]!;
+    expect(sentFile).toBe("/^\\/api\\/pane\\/([^/]+)\\/sent-file\\/([^/]+)$/");
+    expect(crewRouteFor("/api/pane/x/sent-file/y")).toBe("pane/x/sent-file/y");
+    expect(apiPathFor("pane/x/sent-file/y")).toBe("/api/pane/x/sent-file/y");
     // The workspace Changes route: one opaque id segment, then the literal `changes`, and nothing
     // else under `workspace/<id>/` rides the link (worktrees stay lead-local).
     const wsChanges = server.match(/^const WORKSPACE_CHANGES_ROUTE = (.+);$/m)![1]!;
@@ -353,6 +358,13 @@ describe("which routes cross a link", () => {
     expect(crewRouteFor("/api/pane/w1:p1/files/image")).toBe("pane/w1:p1/files/image");
     expect(crewRouteFor("/api/workspace/w1/files/image")).toBe("workspace/w1/files/image");
     expect(crewRouteFor("/api/pane/w1:p1/files/image/x")).toBeNull();
+    // A sent file (ADR 0160): one id segment, nothing under it, and a read.
+    expect(crewRouteFor("/api/pane/w1:p1/sent-file/db0d772a-fcee-4459-aea5-fddc46fa1e82")).toBe(
+      "pane/w1:p1/sent-file/db0d772a-fcee-4459-aea5-fddc46fa1e82",
+    );
+    expect(crewRouteFor("/api/pane/w1:p1/sent-file")).toBeNull();
+    expect(crewRouteFor("/api/pane/w1:p1/sent-file/a/b")).toBeNull();
+    expect(forwardKind("pane/w1:p1/sent-file/db0d772a-fcee-4459-aea5-fddc46fa1e82")).toBe("read");
     expect(crewRouteFor("/api/workspace/w1/files/exist")).toBeNull();
     expect(apiPathFor("pane/w1:p1/files/image")).toBe("/api/pane/w1:p1/files/image");
     expect(apiPathFor("workspace/w1/files/image")).toBe("/api/workspace/w1/files/image");

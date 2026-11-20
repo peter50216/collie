@@ -1756,6 +1756,13 @@ export const tr: Dictionary = {
   "transcript.truncated": "… kısaltıldı",
   "transcript.toolImageAlt": "Araç çıktısı",
   "transcript.attachmentAlt": "Ek",
+  "transcript.sentFileAlt": "Ajanın gönderdiği dosya",
+  "transcript.sentFilePlay": "Yükle ve oynat",
+  "transcript.sentFileDownload": "İndir",
+  "transcript.sentFileLoading": "Yükleniyor…",
+  "transcript.sentFileGone": "Bu dosya artık makinede yok",
+  "transcript.sentFileTooLarge": "Bu dosya yüklenemeyecek kadar büyük",
+  "transcript.sentFileFailed": "Dosya yüklenemedi. Yeniden denemek için dokunun",
 
   // --- markdown (agent prose in Chat and History) ---
   "markdown.stretch.close": "Daha az göster",

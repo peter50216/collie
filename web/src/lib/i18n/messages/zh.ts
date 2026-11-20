@@ -1847,6 +1847,13 @@ export const zh: Dictionary = {
   "transcript.truncated": "… 已截断",
   "transcript.toolImageAlt": "工具输出",
   "transcript.attachmentAlt": "附件",
+  "transcript.sentFileAlt": "A file the agent sent",
+  "transcript.sentFilePlay": "Load and play",
+  "transcript.sentFileDownload": "Download",
+  "transcript.sentFileLoading": "Loading…",
+  "transcript.sentFileGone": "This file is no longer on the machine",
+  "transcript.sentFileTooLarge": "This file is too large to load",
+  "transcript.sentFileFailed": "The file did not load. Tap to try again",
 
   // --- markdown (agent prose in Chat and History) ---
   "markdown.stretch.close": "收起",

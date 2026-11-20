@@ -67,6 +67,7 @@ import {
 } from "./files.ts";
 import { clamp, type Clamped, MAX_RESULT_CHARS, MAX_TEXT_CHARS, stripAnsi, summarizeToolInput } from "./text.ts";
 import { classifyToolCall, type Hunk, type ToolCall } from "./tool-call.ts";
+import { SEND_USER_FILE_TOOL, sentFilesOf } from "./sent-files.ts";
 import type {
   AgentSessionRef,
   JournalAdapter,
@@ -1009,6 +1010,12 @@ export function createClaudeReducer(opts: { includeSidechains?: boolean } = {}):
               if (aid !== undefined) rememberPending(asyncTasks, aid, target);
             } else {
               target.part.result = toolResult(resultText, b.is_error === true, image);
+              // A file the agent put in front of the person (ADR 0160): ids and names on the wire,
+              // the paths left in the log for the route to find again.
+              if (target.part.name === SEND_USER_FILE_TOOL) {
+                const sent = sentFilesOf(row.toolUseResult);
+                if (sent !== null) target.part.result.sent = sent;
+              }
             }
             // The mutation above landed in a turn that went out rows ago. Name it.
             changed.add(target.uuid);

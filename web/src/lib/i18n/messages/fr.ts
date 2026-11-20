@@ -1759,6 +1759,13 @@ export const fr: Dictionary = {
   "transcript.truncated": "… tronqué",
   "transcript.toolImageAlt": "Sortie de l'outil",
   "transcript.attachmentAlt": "Pièce jointe",
+  "transcript.sentFileAlt": "Un fichier envoyé par l’agent",
+  "transcript.sentFilePlay": "Charger et lire",
+  "transcript.sentFileDownload": "Télécharger",
+  "transcript.sentFileLoading": "Chargement…",
+  "transcript.sentFileGone": "Ce fichier n’est plus sur la machine",
+  "transcript.sentFileTooLarge": "Ce fichier est trop volumineux pour être chargé",
+  "transcript.sentFileFailed": "Le fichier n’a pas pu être chargé. Touchez pour réessayer",
 
   // --- markdown (agent prose in Chat and History) ---
   "markdown.stretch.close": "Afficher moins",

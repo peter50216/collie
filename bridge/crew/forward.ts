@@ -119,6 +119,10 @@ const FORWARDABLE: readonly RegExp[] = [
   // `WORKSPACE_FILES_IMAGE_ROUTE` in bridge/server.ts one-for-one. Additive-optional (§7.1).
   /^pane\/[^/]+\/files\/image$/,
   /^workspace\/[^/]+\/files\/image$/,
+  // A file the pane's agent sent to the person (ADR 0160): bytes off the disk of the member whose log
+  // named the file, found by id in that log. Mirrors `PANE_SENT_FILE_ROUTE` in bridge/server.ts
+  // one-for-one. Additive-optional (§7.1): a member that predates it answers 404.
+  /^pane\/[^/]+\/sent-file\/[^/]+$/,
   // Walky talky on the pane that owns the messages (CREW_PROTOCOL.md §21), `pane/<id>/walky`. Mirrors
   // `WALKY_PANE_ROUTE` in bridge/server.ts one-for-one, and carries two requests:
   //   - the POST: a message the LEAD routes to the member that owns the pane, or `pane/all/walky` for
@@ -247,8 +251,8 @@ function isWorkspaceRead(route: string): boolean {
 }
 
 /** The pane actions that only read, as bridge/server.ts's `isPaneReadAction` lists them. */
-function isPaneRead(action: string | undefined): action is undefined | "history" | "chat" | "changes" | "files" {
-  return action === undefined || action === "history" || action === "chat" || action === "changes" || action === "files";
+function isPaneRead(action: string | undefined): action is undefined | "history" | "chat" | "changes" | "files" | "sent-file" {
+  return action === undefined || action === "history" || action === "chat" || action === "changes" || action === "files" || action === "sent-file";
 }
 
 /**

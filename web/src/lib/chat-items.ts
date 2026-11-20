@@ -12,7 +12,7 @@
 //
 // Nothing in it is async, touches the DOM or imports React, so every rule in it is table-testable.
 
-import type { ToolCall, TranscriptEntry, TranscriptPart } from "./types";
+import type { SentFiles, ToolCall, TranscriptEntry, TranscriptPart } from "./types";
 import { firstLine, parseEnvelopeHeader, type EnvelopeHeader } from "./walky";
 
 /** What became of a tool call, as a card colours it. */
@@ -56,7 +56,10 @@ export type ChatItem =
   | { id: string; ts?: string; kind: "compacted"; text?: string }
   // `image`: a picture the call returned (a `Read` of an image, a screenshot), drawn under its card.
   | { id: string; ts?: string; kind: "tool"; tool: ChatToolCall; status: ChatToolStatus; image?: string }
-  | { id: string; ts?: string; kind: "image"; url: string };
+  | { id: string; ts?: string; kind: "image"; url: string }
+  // `sent`: files the agent put in front of the person (Claude Code's SendUserFile, ADR 0160), drawn as
+  // the files themselves in place of the call's card, the way claude.ai draws them.
+  | { id: string; ts?: string; kind: "sent"; sent: SentFiles };
 
 /**
  * The item as a finished text: `partial` dropped. A text the program was writing when the pane stopped working will not
@@ -183,6 +186,10 @@ export function itemsOf(entry: TranscriptEntry, showCompactions = false): ChatIt
         items.push({ id, ts, kind: "image", url: part.url });
         return;
       case "tool": {
+        if (part.result?.sent !== undefined) {
+          items.push({ id, ts, kind: "sent", sent: part.result.sent });
+          return;
+        }
         const item: ChatItem = { id, ts, kind: "tool", tool: toolOf(part), status: toolStatus(part) };
         if (part.result?.imageUrl) item.image = part.result.imageUrl;
         items.push(item);

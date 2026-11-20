@@ -393,7 +393,7 @@ export function __forgetChatSilhouetteMemory(): void {
 
 /**
  * What a block of the stream is, for its silhouette. A person's turn, agent prose, a folded run of steps (or any
- * step while tool calls are off) is a tool row, a lone call's card, a picture and a plan are cards, and a thinking
+ * step while tool calls are off) is a tool row, a lone call's card, a picture, a sent file and a plan are cards, and a thinking
  * fold, a notice or a compaction mark is the rest.
  */
 export function kindOfBlock(group: readonly ChatItem[], drawnSingle: boolean): RowKind {
@@ -406,6 +406,8 @@ export function kindOfBlock(group: readonly ChatItem[], drawnSingle: boolean): R
       return "agent";
     case "tool":
     case "image":
+    // Files the agent sent (ADR 0160): a picture or a file card, so a card's silhouette.
+    case "sent":
       return "card";
     case "thinking":
     case "notice":
